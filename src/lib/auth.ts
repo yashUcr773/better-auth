@@ -13,7 +13,17 @@ export const auth = betterAuth({
             maxAge: 5 * 60
         }
     },
-    plugins:[nextCookies()],
+    socialProviders: {
+        github: {
+            clientId: process.env.GITHUB_CLIENT_ID!,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET!
+        },
+        discord: {
+            clientId: process.env.DISCORD_CLIENT_ID!,
+            clientSecret: process.env.DISCORD_CLIENT_SECRET!
+        }
+    },
+    plugins: [nextCookies()],
     database: drizzleAdapter(db, {
         provider: "pg", // or "mysql", "sqlite"
     }),

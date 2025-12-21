@@ -49,7 +49,6 @@ export function SignUpTab() {
       },
       {
         onError: (error) => {
-          console.log("🚀 ~ handleSignUp ~ error:", error);
           toast.error(error.error.message || "Failed to Sign Up!");
         },
         onSuccess: () => {
