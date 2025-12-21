@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "db:start": "docker compose up",
+    "schema:generate": "@better-auth/cli migrate",
     "db:generate": "drizzle-kit generate",
     "db:reset": "tsx ./src/drizzle/scripts/reset.ts",
     "db:migrate": "drizzle-kit migrate",
