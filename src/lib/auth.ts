@@ -7,20 +7,13 @@ export const auth = betterAuth({
     emailAndPassword: {
         enabled: true
     },
-    rateLimit: {
-        storage: "database",
-        modelName: "rateLimit",
-        enabled: true,
-        window: 60, // time window in seconds
-        max: 10, // max requests in the window
-    },
     session: {
         cookieCache: {
             enabled: true,
             maxAge: 5 * 60
         }
     },
-    plugins: [nextCookies()],
+    plugins:[nextCookies()],
     database: drizzleAdapter(db, {
         provider: "pg", // or "mysql", "sqlite"
     }),
