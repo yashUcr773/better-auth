@@ -2,10 +2,25 @@ import { db } from "@/drizzle/db";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
+import { sendPasswordResetEmail } from "./emails/password-reset-email";
+import { sendVerificationEmail } from "./emails/verification-email";
+import { createAuthMiddleware } from "better-auth/api";
+import { sendWelcomeEmail } from "./emails/welcom-email";
 
 export const auth = betterAuth({
     emailAndPassword: {
-        enabled: true
+        enabled: true,
+        requireEmailVerification: true,
+        sendResetPassword: async ({ user, url }) => {
+            await sendPasswordResetEmail({ user, url })
+        }
+    },
+    emailVerification: {
+        autoSignInAfterVerification: true,
+        sendOnSignUp: true,
+        sendVerificationEmail: async ({ user, url }) => {
+            await sendVerificationEmail({ user, url })
+        }
     },
     session: {
         cookieCache: {
@@ -27,4 +42,15 @@ export const auth = betterAuth({
     database: drizzleAdapter(db, {
         provider: "pg", // or "mysql", "sqlite"
     }),
+    hooks: {
+        after: createAuthMiddleware(async ctx => {
+            if (ctx.path.startsWith('/sign-up')) {
+                console.log("🚀 ~ ctx:", ctx)
+                const user = ctx.context.newSession?.user ?? { name: ctx.body.name, email: ctx.body.email }
+                if (user != null) {
+                    await sendWelcomeEmail(user)
+                }
+            }
+        })
+    }
 });

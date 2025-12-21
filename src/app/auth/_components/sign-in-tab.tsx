@@ -26,7 +26,13 @@ const signInSchema = z.object({
 
 type SignInForm = z.infer<typeof signInSchema>;
 
-export function SignInTab() {
+export function SignInTab({
+  openEmailVerificationTab,
+  openForgotPassword,
+}: {
+  openEmailVerificationTab: (email: string) => void;
+  openForgotPassword: () => void;
+}) {
   const router = useRouter();
 
   const form = useForm<SignInForm>({
@@ -46,6 +52,9 @@ export function SignInTab() {
       },
       {
         onError: (error) => {
+          if (error.error.code === "EMAIL_NOT_VERIFIED") {
+            openEmailVerificationTab(data.email);
+          }
           toast.error(error.error.message || "Failed to Sign In!");
         },
         onSuccess: () => {
@@ -78,7 +87,18 @@ export function SignInTab() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <div className="flex justify-between items-center">
+                <FormLabel>Password</FormLabel>
+                <Button
+                  onClick={openForgotPassword}
+                  type="button"
+                  variant="link"
+                  size="sm"
+                  className="text-sm font-normal underline"
+                >
+                  Forgot password?
+                </Button>
+              </div>
               <FormControl>
                 <PasswordInput {...field} />
               </FormControl>
