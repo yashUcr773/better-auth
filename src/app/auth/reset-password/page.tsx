@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/card";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth/auth-client";
 
 const resetPasswordSchema = z.object({
   password: z.string().min(6),
