@@ -28,6 +28,7 @@ import { ChangePasswordForm } from "./_components/change-password-form";
 import { SetPasswordButton } from "./_components/set-password-button";
 import { SessionManagement } from "./_components/session-management";
 import { AccountLinking } from "./_components/account-linking";
+import { TwoFactorAuth } from "./_components/two-factor-auth";
 
 export default async function ProfilePage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -100,7 +101,10 @@ export default async function ProfilePage() {
 
         <TabsContent value="security">
           <LoadingSuspense>
-            <SecurityTab email={session.user.email} />
+            <SecurityTab
+              email={session.user.email}
+              isTwoFactorEnabled={session.user.twoFactorEnabled ?? false}
+            />
           </LoadingSuspense>
         </TabsContent>
 
@@ -153,9 +157,7 @@ async function SessionsTab({
 }: {
   currentSessionToken: string;
 }) {
-  console.log("🚀 ~ SessionsTab ~ currentSessionToken:", currentSessionToken)
   const sessions = await auth.api.listSessions({ headers: await headers() });
-  console.log("🚀 ~ SessionsTab ~ sessions:", sessions)
 
   return (
     <Card>
@@ -169,7 +171,13 @@ async function SessionsTab({
   );
 }
 
-async function SecurityTab({ email }: { email: string }) {
+async function SecurityTab({
+  email,
+  isTwoFactorEnabled,
+}: {
+  email: string;
+  isTwoFactorEnabled: boolean;
+}) {
   const [accounts] = await Promise.all([
     auth.api.listUserAccounts({ headers: await headers() }),
   ]);
@@ -205,7 +213,7 @@ async function SecurityTab({ email }: { email: string }) {
           </CardContent>
         </Card>
       )}
-      {/* {hasPasswordAccount && (
+      {hasPasswordAccount && (
         <Card>
           <CardHeader className="flex items-center justify-between gap-2">
             <CardTitle>Two-Factor Authentication</CardTitle>
@@ -217,7 +225,7 @@ async function SecurityTab({ email }: { email: string }) {
             <TwoFactorAuth isEnabled={isTwoFactorEnabled} />
           </CardContent>
         </Card>
-      )} */}
+      )}
       {/* 
       <Card>
         <CardHeader>
