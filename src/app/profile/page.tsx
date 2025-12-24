@@ -29,6 +29,7 @@ import { SetPasswordButton } from "./_components/set-password-button";
 import { SessionManagement } from "./_components/session-management";
 import { AccountLinking } from "./_components/account-linking";
 import { TwoFactorAuth } from "./_components/two-factor-auth";
+import { PasskeyManagement } from "./_components/passkey-management";
 
 export default async function ProfilePage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -178,8 +179,9 @@ async function SecurityTab({
   email: string;
   isTwoFactorEnabled: boolean;
 }) {
-  const [accounts] = await Promise.all([
+  const [accounts, passkeys] = await Promise.all([
     auth.api.listUserAccounts({ headers: await headers() }),
+    auth.api.listPasskeys({ headers: await headers() }),
   ]);
 
   const hasPasswordAccount = accounts.some(
@@ -226,7 +228,7 @@ async function SecurityTab({
           </CardContent>
         </Card>
       )}
-      {/* 
+
       <Card>
         <CardHeader>
           <CardTitle>Passkeys</CardTitle>
@@ -234,7 +236,7 @@ async function SecurityTab({
         <CardContent>
           <PasskeyManagement passkeys={passkeys} />
         </CardContent>
-      </Card> */}
+      </Card>
     </div>
   );
 }
