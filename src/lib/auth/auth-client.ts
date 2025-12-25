@@ -1,12 +1,19 @@
 import { createAuthClient } from "better-auth/react"
-import { inferAdditionalFields, twoFactorClient } from "better-auth/client/plugins"
+import { inferAdditionalFields, twoFactorClient, adminClient } from "better-auth/client/plugins"
 import { passkeyClient } from "@better-auth/passkey/client"
 import { auth } from "./auth"
+import { ac, admin, user } from "@/components/auth/permissions"
 
 export const authClient = createAuthClient({
     plugins: [inferAdditionalFields<typeof auth>(), twoFactorClient({
         onTwoFactorRedirect: () => {
             window.location.href = "/auth/2fa"
         }
-    }), passkeyClient()]
+    }), passkeyClient(), adminClient({
+        ac,
+        roles: {
+            admin: admin,
+            user: user
+        }
+    })]
 })
