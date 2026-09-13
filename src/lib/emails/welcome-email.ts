@@ -1,7 +1,6 @@
 import { sendEmail } from "./send-email"
 
 export async function sendWelcomeEmail(user: { name: string; email: string }) {
-    console.log("🚀 ~ sendWelcomeEmail ~ user:", user)
     await sendEmail({
         to: user.email,
         subject: "Welcome to Our App!",

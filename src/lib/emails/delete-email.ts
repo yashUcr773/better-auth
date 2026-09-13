@@ -12,7 +12,6 @@ export async function sendDeleteAccountVerificationEmail({
     user,
     url,
 }: EmailVerificationData) {
-    console.log(user, url)
     await sendEmail({
         to: user.email,
         subject: "Delete your account",

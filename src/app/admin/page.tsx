@@ -25,7 +25,7 @@ export default async function AdminPage() {
   if (session == null) return redirect("/auth/login");
   const hasAccess = await auth.api.userHasPermission({
     headers: await headers(),
-    body: { permission: { user: ["list"] } },
+    body: { permissions: { user: ["list"] } },
   });
   if (!hasAccess.success) return redirect("/");
 

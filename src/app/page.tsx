@@ -7,15 +7,39 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const { data: session, isPending: isLoading } = authClient.useSession();
-  const [hasAdminPermission, setHasAdminPermission] = useState(false);
+  const [adminPermission, setAdminPermission] = useState<{
+    userId: string;
+    hasAccess: boolean;
+  } | null>(null);
 
   useEffect(() => {
+    if (session == null) return;
+
+    let isMounted = true;
+
     authClient.admin
-      .hasPermission({ permission: { user: ["list"] } })
+      .hasPermission({ permissions: { user: ["list"] } })
       .then(({ data }) => {
-        setHasAdminPermission(data?.success ?? true);
+        if (isMounted) {
+          setAdminPermission({
+            userId: session.user.id,
+            hasAccess: data?.success ?? false,
+          });
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setAdminPermission({
+            userId: session.user.id,
+            hasAccess: false,
+          });
+        }
       });
-  });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [session]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -34,14 +58,15 @@ export default function Home() {
         ) : (
           <>
             <h1 className="text-3xl font-bold">Welcome {session.user.name}!</h1>
-            <div className="flex gap-4 justify-center">
+            <div className="flex flex-wrap gap-4 justify-center">
               <Button asChild size="lg">
                 <Link href="/profile">Profile</Link>
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link href="/organizations">Organizations</Link>
               </Button>
-              {hasAdminPermission && (
+              {adminPermission?.userId === session.user.id &&
+                adminPermission.hasAccess && (
                 <Button variant="outline" asChild size="lg">
                   <Link href="/admin">Admin</Link>
                 </Button>

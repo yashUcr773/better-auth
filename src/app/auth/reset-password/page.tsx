@@ -25,6 +25,7 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { authClient } from "@/lib/auth/auth-client";
+import { Suspense } from "react";
 
 const resetPasswordSchema = z.object({
   password: z.string().min(6),
@@ -33,6 +34,14 @@ const resetPasswordSchema = z.object({
 type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
 export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<ResetPasswordShell />}>
+      <ResetPasswordContent />
+    </Suspense>
+  );
+}
+
+function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -124,6 +133,21 @@ export default function ResetPasswordPage() {
               </Button>
             </form>
           </Form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function ResetPasswordShell() {
+  return (
+    <div className="my-6 px-4">
+      <Card className="w-full max-w-md mx-auto">
+        <CardHeader>
+          <CardTitle className="text-2xl">Reset Your Password</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-10 rounded-md bg-muted" />
         </CardContent>
       </Card>
     </div>

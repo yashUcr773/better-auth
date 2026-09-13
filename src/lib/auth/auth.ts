@@ -5,7 +5,7 @@ import { nextCookies } from "better-auth/next-js";
 import { sendPasswordResetEmail } from "../emails/password-reset-email";
 import { sendVerificationEmail } from "../emails/verification-email";
 import { createAuthMiddleware } from "better-auth/api";
-import { sendWelcomeEmail } from "../emails/welcom-email";
+import { sendWelcomeEmail } from "../emails/welcome-email";
 import { sendDeleteAccountVerificationEmail } from "../emails/delete-email";
 import { admin, organization, twoFactor, } from "better-auth/plugins";
 import { passkey } from "@better-auth/passkey"
@@ -14,11 +14,16 @@ import { sendOrganizationInviteEmail } from "../emails/org-invite-email";
 import { member } from "@/drizzle/schema";
 import { desc, eq } from "drizzle-orm";
 
+type EmailUser = {
+    name: string;
+    email: string;
+};
+
 export const auth = betterAuth({
     user: {
         changeEmail: {
             enabled: true,
-            sendChangeEmailVerification: async ({ user, url, newEmail }) => {
+            sendChangeEmailVerification: async ({ user, url, newEmail }: { user: EmailUser, url: string, newEmail: string }) => {
                 await sendVerificationEmail({
                     user: { ...user, email: newEmail }, url
                 })
@@ -77,7 +82,7 @@ export const auth = betterAuth({
             }
         }
     },
-    plugins: [nextCookies(), twoFactor(), passkey(), admin({
+    plugins: [twoFactor(), passkey(), admin({
         ac,
         roles: {
             admin: adminRole,
@@ -87,14 +92,13 @@ export const auth = betterAuth({
         sendInvitationEmail: async ({ email, invitation, inviter, organization }) => {
             await sendOrganizationInviteEmail({ email, invitation, inviter: { name: inviter.user.name }, organization })
         }
-    })],
+    }), nextCookies()],
     database: drizzleAdapter(db, {
         provider: "pg", // or "mysql", "sqlite"
     }),
     hooks: {
         after: createAuthMiddleware(async ctx => {
             if (ctx.path.startsWith('/sign-up')) {
-                console.log("🚀 ~ ctx:", ctx)
                 const user = ctx.context.newSession?.user ?? { name: ctx.body.name, email: ctx.body.email }
                 if (user != null) {
                     await sendWelcomeEmail(user)

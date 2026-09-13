@@ -8,7 +8,8 @@ async function main() {
         const db = drizzle(process.env.DATABASE_URL!);
         await reset(db, schema);
     } catch(e) {
-        console.log(e)
+        console.error(e)
+        process.exitCode = 1
     }
 }
 main();

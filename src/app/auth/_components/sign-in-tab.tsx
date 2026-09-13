@@ -45,7 +45,7 @@ export function SignInTab({
   });
 
   const handleSignIn = async (data: SignInForm) => {
-    const res = await authClient.signIn.email(
+    await authClient.signIn.email(
       {
         email: data.email,
         password: data.password,

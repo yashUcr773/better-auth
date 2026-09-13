@@ -2,20 +2,20 @@
 
 import { BetterAuthActionButton } from "@/components/auth/better-auth-action-button";
 import { authClient } from "@/lib/auth/auth-client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function EmailVerification({ email }: { email: string }) {
   const [timeToNextResend, setTimeToNextResend] = useState(30);
   const intervalRef = useRef<number | null>(null);
 
-  function clearTimer() {
+  const clearTimer = useCallback(() => {
     if (intervalRef.current !== null) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
-  }
+  }, []);
 
-  function startTimer() {
+  const startTimer = useCallback(() => {
     clearTimer();
 
     intervalRef.current = window.setInterval(() => {
@@ -27,7 +27,7 @@ export function EmailVerification({ email }: { email: string }) {
         return t - 1;
       });
     }, 1000);
-  }
+  }, [clearTimer]);
 
   useEffect(() => {
     authClient.sendVerificationEmail({
@@ -38,7 +38,7 @@ export function EmailVerification({ email }: { email: string }) {
     startTimer(); // ✅ no synchronous setState
 
     return clearTimer;
-  }, [email]);
+  }, [email, startTimer, clearTimer]);
 
   function resend() {
     setTimeToNextResend(30); // ✅ event handler is fine

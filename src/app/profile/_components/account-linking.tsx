@@ -9,7 +9,6 @@ import {
   SUPPORTED_OAUTH_PROVIDERS,
   SupportedOAuthProvider,
 } from "@/lib/auth/o-auth-providers";
-import { router } from "better-auth/api";
 import { Plus, Shield, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -89,7 +88,6 @@ function AccountCard({
     return authClient.unlinkAccount(
       {
         accountId: account.accountId,
-        providerId: provider,
       },
       {
         onSuccess: () => {

@@ -14,7 +14,7 @@ const aj = arcjet({
 const botSettings = { mode: "LIVE", allow: [], } satisfies BotOptions
 const restrictiveRateLimit = { mode: "LIVE", max: 10, interval: '10m' } satisfies SlidingWindowRateLimitOptions<[]>
 const laxRateLimit = { mode: "LIVE", max: 60, interval: '10m' } satisfies SlidingWindowRateLimitOptions<[]>
-const emailSettings = { mode: 'LIVE', block: ['DISPOSABLE', 'INVALID', 'NO_MX_RECORDS'] } satisfies EmailOptions
+const emailSettings = { mode: 'LIVE', deny: ['DISPOSABLE', 'INVALID', 'NO_MX_RECORDS'] } satisfies EmailOptions
 
 const authHandlers = toNextJsHandler(auth);
 

@@ -7,7 +7,9 @@ import { ac, admin, user } from "@/components/auth/permissions"
 export const authClient = createAuthClient({
     plugins: [inferAdditionalFields<typeof auth>(), twoFactorClient({
         onTwoFactorRedirect: () => {
-            window.location.href = "/auth/2fa"
+            // Better Auth invokes this outside a React component, so use the browser location API.
+            // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+            window.location.assign("/auth/2fa")
         }
     }), passkeyClient(), adminClient({
         ac,
